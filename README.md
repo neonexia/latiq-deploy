@@ -8,6 +8,9 @@ curl -O https://raw.githubusercontent.com/neonexia/latiq-deploy/main/docker-comp
 docker compose up -d          # or:  podman compose up -d
 ```
 
+> **Apple Silicon / ARM:** the images are currently `linux/amd64`. Until multi-arch
+> images land, run with emulation: `DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d`.
+
 Same published images, same topology (control plane + 2 pond nodes + a gateway),
 either runtime — the compose is pure images + ports, no local files. Then:
 
