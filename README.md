@@ -1,15 +1,15 @@
 # latiq-deploy
 
 Run [Latiq](https://github.com/neonexia/latiq) — an agent-native data system — via
-Docker. **No repo clone, two commands:**
+Docker **or** Podman. **No repo clone, two commands:**
 
 ```bash
 curl -O https://raw.githubusercontent.com/neonexia/latiq-deploy/main/docker-compose.yml
-docker compose up -d
+docker compose up -d          # or:  podman compose up -d
 ```
 
-That starts a control plane + 2 pond nodes behind a gateway, using published
-images. Then:
+Same published images, same topology (control plane + 2 pond nodes + a gateway),
+either runtime — the compose is pure images + ports, no local files. Then:
 
 - **Agents (MCP, no SDK):** point any MCP client at `http://localhost:51510/mcp`.
 - **Programs (Python SDK):**
@@ -23,11 +23,11 @@ images. Then:
   work.query(sql="CREATE TABLE t AS SELECT 42 AS n")
   print(work.query(sql="SELECT * FROM t").to_pandas())
   ```
-  (Or `latiq.connect("local")` for a fully in-process cluster — no docker at all.)
+  (Or `latiq.connect("local")` for a fully in-process cluster — no containers at all.)
 
-Pin a version: `LATIQ_IMAGE=ghcr.io/neonexia/latiq:<tag> docker compose up -d`.
+Pin versions: `LATIQ_IMAGE=ghcr.io/neonexia/latiq:<tag> LATIQ_GATEWAY_IMAGE=ghcr.io/neonexia/latiq-gateway:<tag> docker compose up -d`.
 
-Stop: `docker compose down`. Wipe data too: `docker compose down -v`.
+Stop: `docker compose down` (add `-v` to wipe pond data).
 
 This compose is generated from the Latiq repo and kept in sync by its release
 pipeline. Source: `neonexia/latiq` (`deploy/latiq-compose.yml`).
