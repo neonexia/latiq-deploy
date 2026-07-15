@@ -28,6 +28,23 @@ either runtime — the compose is pure images + ports, no local files. Then:
   ```
   (Or `latiq.connect("local")` for a fully in-process cluster — no containers at all.)
 
+## Admin CLI
+
+Install the `latiq` CLI natively (a small client-only build — no server/DuckDB) to
+run admin commands against a cluster:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/neonexia/latiq-deploy/main/install.sh | sh
+export LATIQ_SERVER=http://your-control-plane:51400
+latiq stats                 # nodes, ponds, tiers
+latiq pond list
+latiq dataset list
+latiq query --pond work "SELECT 1"
+```
+
+macOS + Linux, arm64 + x86_64.
+
+
 Pin versions: `LATIQ_IMAGE=ghcr.io/neonexia/latiq:<tag> LATIQ_GATEWAY_IMAGE=ghcr.io/neonexia/latiq-gateway:<tag> docker compose up -d`.
 
 Stop: `docker compose down` (add `-v` to wipe pond data).
