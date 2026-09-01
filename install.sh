@@ -1,13 +1,19 @@
 #!/bin/sh
 # Install the Latiq admin CLI (a small, client-only `latiq` — no server/DuckDB).
-#   curl -fsSL https://raw.githubusercontent.com/neonexia/latiq-deploy/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/neonexia/latiq/main/deploy/install.sh | sh
 # Then:  export LATIQ_SERVER=http://your-control-plane:51400 && latiq stats
 #
-# Override the install dir with LATIQ_BIN_DIR (default ~/.local/bin).
+# Override the install dir with LATIQ_BIN_DIR (default ~/.local/bin), and the
+# release source with LATIQ_RELEASE_REPO / LATIQ_RELEASE_TAG.
 set -eu
 
-repo="neonexia/latiq-deploy"
-tag="cli-latest"
+# Where the prebuilt CLI binaries are published. `cli-latest` is a ROLLING release
+# in this repo, refreshed by the nightly's `publish-cli` job and by every tagged
+# release (.github/workflows/nightly.yml + release.yml) — change those and this
+# together, or the installer and the publisher disagree.
+# Pin a specific version instead with  LATIQ_RELEASE_TAG=v0.2.0.
+repo="${LATIQ_RELEASE_REPO:-neonexia/latiq}"
+tag="${LATIQ_RELEASE_TAG:-cli-latest}"
 
 os=$(uname -s)
 arch=$(uname -m)

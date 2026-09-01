@@ -1,8 +1,16 @@
+# MOVED — this file is frozen.
+#
+# Latiq's deployment artifacts now live in the main repo, which is public:
+#   https://github.com/neonexia/latiq/tree/main/deploy
+#
+# This copy is kept only so existing links keep working. It is a snapshot of
+# deploy/docker-compose.yml at latiq v0.1.0 and will not be updated again.
+#
 # Latiq — the minimal, self-contained deployment for external users. References
 # only PUBLISHED images (GHCR + Docker Hub) — no inline configs, no file mounts —
 # so it runs with NO repo clone and identically under Docker AND Podman:
 #
-#   curl -O https://raw.githubusercontent.com/neonexia/latiq-deploy/main/docker-compose.yml
+#   curl -O https://raw.githubusercontent.com/neonexia/latiq/main/deploy/docker-compose.yml
 #   docker compose up -d      # (or: podman compose up -d)
 #
 # Then:
@@ -38,6 +46,14 @@ services:
               "--root", "/var/lib/latiq"]
     environment:
       LATIQ_SERVER: http://control-plane:51400
+      # The URL agents actually dial. MCP is reachable only through the gateway
+      # here, so the node publishes that as its RFC 9728 `resource` and in its
+      # 401 challenge -- a client that discovers this node's own address would
+      # refuse it as a different origin. It is ALSO the MCP `Host` allow-list
+      # (rmcp's DNS-rebinding guard is loopback-only by default), so it must
+      # name the host agents send. Override when you expose the gateway under a
+      # public name (e.g. https://latiq.example.com/mcp).
+      LATIQ_PUBLIC_MCP_URL: ${LATIQ_PUBLIC_MCP_URL:-http://localhost:51510/mcp}
     depends_on:
       control-plane: { condition: service_healthy }
     healthcheck:
@@ -54,6 +70,14 @@ services:
               "--root", "/var/lib/latiq"]
     environment:
       LATIQ_SERVER: http://control-plane:51400
+      # The URL agents actually dial. MCP is reachable only through the gateway
+      # here, so the node publishes that as its RFC 9728 `resource` and in its
+      # 401 challenge -- a client that discovers this node's own address would
+      # refuse it as a different origin. It is ALSO the MCP `Host` allow-list
+      # (rmcp's DNS-rebinding guard is loopback-only by default), so it must
+      # name the host agents send. Override when you expose the gateway under a
+      # public name (e.g. https://latiq.example.com/mcp).
+      LATIQ_PUBLIC_MCP_URL: ${LATIQ_PUBLIC_MCP_URL:-http://localhost:51510/mcp}
     depends_on:
       control-plane: { condition: service_healthy }
     healthcheck:

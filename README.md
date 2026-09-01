@@ -1,53 +1,46 @@
-# latiq-deploy
+# latiq-deploy — moved
 
-Run [Latiq](https://github.com/neonexia/latiq) — an agent-native data system — via
-Docker **or** Podman. **No repo clone, two commands:**
+**Latiq is now open source (Apache 2.0), and its deployment artifacts live in the
+main repository:**
 
-```bash
-curl -O https://raw.githubusercontent.com/neonexia/latiq-deploy/main/docker-compose.yml
-docker compose up -d          # or:  podman compose up -d
+### → https://github.com/neonexia/latiq/tree/main/deploy
+
+This repo existed only because `neonexia/latiq` used to be private and you could
+not fetch a compose file from it. That is no longer the case. **Everything here is
+frozen and will not be updated.**
+
+## Run Latiq
+
+No clone needed — published images, Docker or Podman:
+
+```sh
+curl -O https://raw.githubusercontent.com/neonexia/latiq/main/deploy/docker-compose.yml
+docker compose up -d          # or: podman compose up -d
 ```
 
-> **Apple Silicon / ARM:** the images are currently `linux/amd64`. Until multi-arch
-> images land, run with emulation: `DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up -d`.
+Admin CLI:
 
-Same published images, same topology (control plane + 2 pond nodes + a gateway),
-either runtime — the compose is pure images + ports, no local files. Then:
-
-- **Agents (MCP, no SDK):** point any MCP client at `http://localhost:51510/mcp`.
-- **Programs (Python SDK):**
-  ```bash
-  pip install latiq
-  ```
-  ```python
-  import latiq
-  db = latiq.connect("grpc://localhost:51400", query_gateway="grpc://localhost:51500")
-  work = db.create_pond(name="work")
-  work.query(sql="CREATE TABLE t AS SELECT 42 AS n")
-  print(work.query(sql="SELECT * FROM t").to_pandas())
-  ```
-  (Or `latiq.connect("local")` for a fully in-process cluster — no containers at all.)
-
-## Admin CLI
-
-Install the `latiq` CLI natively (a small client-only build — no server/DuckDB) to
-run admin commands against a cluster:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/neonexia/latiq-deploy/main/install.sh | sh
-export LATIQ_SERVER=http://your-control-plane:51400
-latiq stats                 # nodes, ponds, tiers
-latiq pond list
-latiq dataset list
-latiq query --pond work "SELECT 1"
+```sh
+curl -fsSL https://raw.githubusercontent.com/neonexia/latiq/main/deploy/install.sh | sh
 ```
 
-macOS + Linux, arm64 + x86_64.
+Embedded, in Python:
 
+```sh
+pip install latiq
+```
 
-Pin versions: `LATIQ_IMAGE=ghcr.io/neonexia/latiq:<tag> LATIQ_GATEWAY_IMAGE=ghcr.io/neonexia/latiq-gateway:<tag> docker compose up -d`.
+Start here for the full picture, including the multi-node cluster and the
+Iceberg/MinIO fixture:
+**https://github.com/neonexia/latiq/blob/main/deploy/README.md**
 
-Stop: `docker compose down` (add `-v` to wipe pond data).
+## About the files still in this repo
 
-This compose is generated from the Latiq repo and kept in sync by its release
-pipeline. Source: `neonexia/latiq` (`deploy/latiq-compose.yml`).
+`docker-compose.yml` and `install.sh` are kept so existing links and bookmarks
+keep working. They are snapshots taken at **latiq v0.1.0** and both now point at
+`neonexia/latiq` for images and release assets, so they still function — but they
+will not receive fixes. Use the links above instead.
+
+The `cli-latest` release on this repo also stays published, so CLI installers
+downloaded before the move keep resolving. New installs get their binaries from
+[`neonexia/latiq`](https://github.com/neonexia/latiq/releases).
